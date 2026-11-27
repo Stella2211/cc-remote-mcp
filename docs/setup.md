@@ -32,6 +32,34 @@ CC_REMOTE_MCP_ACCESS_AUD=<AUD タグ>
 
 `bun run deploy --dry-run` のように付けた引数は、そのまま `wrangler deploy` に渡る。
 
+## Claude Code にまかせる（bootstrap）
+
+フォークしたリポジトリを Claude Code に渡すと、`bun run bootstrap`（`scripts/bootstrap.ts`、[bootstrap/](./bootstrap/README.md)）で上の表の値を調べて登録できる。人がやるのは、ダッシュボードなどにしかない次の作業だけ。
+
+- GitHub：リポジトリをフォークし、フォークの Actions タブでワークフローを有効にする（フォークでは既定で無効）。`gh auth login` がまだなら済ませる。
+- Cloudflare：Zero Trust を一度有効にする（チーム名とプランを選ぶ。初回だけ）。API トークンを下の表の権限で作り、`CLOUDFLARE_API_TOKEN` として環境変数か `.env.local` に入れる。ホスト名を2つ決める。
+- 任意：Discord の Webhook を作り、`DISCORD_WEBHOOK_URL` として環境変数に入れる。
+- あとで：claude.ai へのコネクタの追加とログイン（手順 6）、各 PC での `claude rc` の初回の承認（手順 3）。
+
+| API トークンの権限 | 使うところ |
+| --- | --- |
+| テンプレート「Edit Cloudflare Workers」（対象はデプロイ先のアカウントと、カスタムドメインを置くゾーン） | デプロイ（CI と `bun run deploy`）と `wrangler secret put`。カスタムドメインで権限が足りないと言われたら Zone の「DNS: Edit」を足す |
+| Account の「Access: Organizations, Identity Providers, and Groups: Read」 | `bootstrap github`：チームのドメイン（`auth_domain`）を読む |
+| Account の「Access: Apps and Policies: Read」 | `bootstrap github`：Access アプリを探し、AUD を読む |
+| Account の「Access: Apps and Policies: Edit」（Read の代わり） | `--create-access-app` で Access アプリとポリシーを作るときだけ |
+
+`bootstrap github` は、使ったトークンをそのまま GitHub の secret `CLOUDFLARE_API_TOKEN` に入れる。
+
+```sh
+bun run bootstrap github --mcp-host <MCP のホスト> --link-host <link のホスト> --dry-run   # 何も書かずに、登録するものを表示する
+bun run bootstrap github --mcp-host <MCP のホスト> --link-host <link のホスト>             # 手順 1 の Access アプリを作ってあるとき
+bun run bootstrap github --mcp-host <MCP のホスト> --link-host <link のホスト> --create-access-app --email <許可するメールアドレス>   # 手順 1 も API で行う
+gh workflow run ci --repo <owner/name> --ref main                                       # デプロイ（手順 2 の代わり）。gh run list / gh run watch で待つ
+bun run bootstrap worker-secrets --email <許可するメールアドレス>                           # デプロイのあと。Worker のシークレット（手順 2・4。devices.local.json と DISCORD_WEBHOOK_URL があればそれも）
+```
+
+どちらも `--dry-run` を付けると、何も書かずに登録するものを表示する（シークレットの値は出さない）。`--worker-name` は `CC_REMOTE_MCP_WORKER_NAME` と同じ意味で、`worker-secrets` は必ずその Worker（なければ `wrangler.jsonc` の `name`）に入れる。アカウントが複数あるときは `--account-id` で選ぶ。確認は手順 2 の `curl` と、手順 5 の `{"link":"open"}`。
+
 ## 1. Cloudflare Access（MCP 側）
 
 Zero Trust のダッシュボードで、self-hosted のアプリを新しく作る。
@@ -47,6 +75,8 @@ Zero Trust のダッシュボードで、self-hosted のアプリを新しく作
 | Access token lifetime | 既定（15分） |
 
 作ったアプリの AUD タグを `CC_REMOTE_MCP_ACCESS_AUD` に、チームのドメインを `CC_REMOTE_MCP_ACCESS_TEAM_DOMAIN` に入れる（`.env.local` と repository variables。空のままではデプロイしない）。Access アプリはホスト名だけで作れるので、デプロイより先に作っておくと、AUD 入りの設定で1回でデプロイできる。
+
+この手順は API でもできる（`bun run bootstrap github --create-access-app`、[Claude Code にまかせる](#claude-code-にまかせるbootstrap)）。Managed OAuth・DCR・Allowed redirect URIs・Grant session duration は Access アプリの `oauth_configuration` で設定する。
 
 ## 2. デプロイ
 

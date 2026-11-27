@@ -44,7 +44,7 @@ claude.ai ──MCP(OAuth)──▶ <MCP のホスト>/mcp ─┐  Cloudflare Wo
 
 ## セットアップ
 
-手順は [docs/setup.md](./docs/setup.md)。設計と実装の説明は [docs/README.md](./docs/README.md)。
+手順は [docs/setup.md](./docs/setup.md)。フォークしたリポジトリを Claude Code に渡せば、API トークンなど人にしかできない作業を除き、値の登録とデプロイまで進められる（`bun run bootstrap`。[CLAUDE.md](./CLAUDE.md) の「フォークしてデプロイする」）。設計と実装の説明は [docs/README.md](./docs/README.md)。
 
 ## 開発
 
@@ -56,6 +56,7 @@ bun run dev        # wrangler dev（DEV_BYPASS_ACCESS=1 なら localhost で Acc
 bun run client     # クライアントを手元で動かす（client/.env を読む。別の設定ファイルは `--env <パス>`）
 bun run cf-typegen # wrangler.jsonc を変えたあと、worker-configuration.d.ts を作り直す
 bun run deploy     # 本番の値（.env.local の CC_REMOTE_MCP_*）を差し込んでデプロイする
+bun run bootstrap  # フォークのセットアップ：Cloudflare の値を調べ、GitHub Actions の variables / secrets と Worker のシークレットを登録する（--dry-run で表示だけ）
 ```
 
 `bun run dev` のシークレットは、`.dev.vars.example` を `.dev.vars` にコピーして書く（`ALLOWED_EMAIL`・`DEVICE_KEYS`・`DEV_BYPASS_ACCESS`・`DISCORD_WEBHOOK_URL`。`.dev.vars` はコミットしない）。

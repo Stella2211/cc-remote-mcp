@@ -11,7 +11,8 @@
     "deploy": "bun run scripts/deploy.ts",
     "cf-typegen": "wrangler types --strict-vars=false",
     "client": "bun run client/main.ts",
-    "device": "bun run scripts/device.ts"
+    "device": "bun run scripts/device.ts",
+    "bootstrap": "bun run scripts/bootstrap.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/server": "2.3.1",
