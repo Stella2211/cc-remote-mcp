@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cc-remote-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  // ホスト名と Access の値は例。本番の値はリポジトリに置かず、`bun run deploy`（scripts/deploy.ts）が
+  // 環境変数 CC_REMOTE_MCP_*（GitHub の repository variables か、手元の .env.local）から差し込む。docs/setup.md を参照
+  "routes": [
+    // MCP の入口。Cloudflare Access（Managed OAuth）で保護する
+    { "pattern": "cc-remote-mcp.example.com", "custom_domain": true },
+    // 各PCのクライアントが WebSocket でつなぐ入口。Access の対象外にし、端末ごとのトークンで認証する
+    { "pattern": "link.cc-remote-mcp.example.com", "custom_domain": true }
+  ],
+  "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false } },
+  // 端末の接続をまとめる Durable Object（SQLite 版。無料プランで使える）
+  "durable_objects": {
+    "bindings": [{ "name": "HUB", "class_name": "DeviceHub" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["DeviceHub"] }],
+  "vars": {
+    // routes と同じホスト名。Worker はこの2つでリクエストを振り分ける。空なら localhost 以外は 500（fail closed）
+    "MCP_HOST": "cc-remote-mcp.example.com",
+    "LINK_HOST": "link.cc-remote-mcp.example.com",
+    // Cloudflare Access の設定値（アプリ「cc-remote-mcp」）。空のままだと /mcp は 500 を返す（fail closed）
+    "ACCESS_TEAM_DOMAIN": "",
+    "ACCESS_AUD": ""
+  }
+}
