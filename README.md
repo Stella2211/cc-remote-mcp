@@ -42,6 +42,10 @@ claude.ai ──MCP(OAuth)──▶ <MCP のホスト>/mcp ─┐  Cloudflare Wo
 - **Discord の Webhook の受け手**（設定したとき）には、rc と対話セッションの起動・停止（日時・端末名・場所。起動には状態も）と、拒否したメールアドレスが届く。プロンプトや入力の中身は送らない。
 - このプロジェクトは Anthropic の公式ツールではなく、Anthropic とは関係がない。
 
+## セキュリティ
+
+脆弱性の報告は [SECURITY.md](./SECURITY.md) を参照。
+
 ## セットアップ
 
 手順は [docs/setup.md](./docs/setup.md)。フォークしたリポジトリを Claude Code に渡せば、API トークンなど人にしかできない作業を除き、値の登録とデプロイまで進められる（`bun run bootstrap`。[CLAUDE.md](./CLAUDE.md) の「フォークしてデプロイする」）。設計と実装の説明は [docs/README.md](./docs/README.md)。
