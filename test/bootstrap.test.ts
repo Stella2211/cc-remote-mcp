@@ -11,6 +11,7 @@ import {
   findAppsForHost,
   oauthWarnings,
   parseArgs,
+  validateDeviceKeys,
   REDIRECT_URIS,
   type AccessApp,
 } from "../scripts/bootstrap";
@@ -180,4 +181,30 @@ describe("Access apps", () => {
     expect(w.join("\n")).toContain(REDIRECT_URIS[1]!);
     expect(w.join("\n")).toMatch(/Grant session duration/);
   });
+});
+
+describe("validateDeviceKeys", () => {
+  const H = "a".repeat(64);
+  const bad = (raw: string) => {
+    let message = "";
+    try {
+      validateDeviceKeys(raw);
+    } catch (e) {
+      expect(e).toBeInstanceOf(BootstrapError);
+      message = (e as Error).message;
+    }
+    expect(message).not.toBe("");
+    expect(message).not.toContain(H);
+    return message;
+  };
+
+  test("正しい中身は通る", () => {
+    expect(() => validateDeviceKeys(JSON.stringify({ "my-pc": H, mac2: "B".repeat(64) }))).not.toThrow();
+  });
+  test("{} は止める", () => { bad("{}"); });
+  test("JSON でないものは止める", () => { bad(`{"my-pc": "${H}"`); });
+  test("配列は止める", () => { bad(JSON.stringify([H])); });
+  test("端末名が規則に合わないものは止める", () => { bad(JSON.stringify({ "My_PC": H })); });
+  test("ハッシュが規則に合わないものは止める", () => { bad(JSON.stringify({ "my-pc": "abc" })); });
+  test("正しいものと悪いものが混ざっていても止める", () => { bad(JSON.stringify({ "my-pc": H, "bad name": H })); });
 });

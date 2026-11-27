@@ -2,7 +2,7 @@
 
 | ファイル | 内容 |
 | --- | --- |
-| `scripts/bootstrap.ts` | `parseArgs`（引数と環境変数）、`buildGithubPlan` / `buildWorkerSecretPlan`（登録する一覧）、`describeStep`（伏せ字つきの表示）、`commandFor`（`gh` / `wrangler` の引数と標準入力）、`findAppsForHost` / `findAppsCovering` / `oauthWarnings`（Access アプリの照合と点検）、`accessAppBody` / `accessPolicyBody`（作るときの中身）、`github` / `workerSecrets`（実行） |
+| `scripts/bootstrap.ts` | `parseArgs`（引数と環境変数）、`buildGithubPlan` / `buildWorkerSecretPlan`（登録する一覧）、`validateDeviceKeys`（`src/device-auth.ts` の `parseDeviceKeys` を使った `devices.local.json` の検査）、`describeStep`（伏せ字つきの表示）、`commandFor`（`gh` / `wrangler` の引数と標準入力）、`findAppsForHost` / `findAppsCovering` / `oauthWarnings`（Access アプリの照合と点検）、`accessAppBody` / `accessPolicyBody`（作るときの中身）、`github` / `workerSecrets`（実行） |
 | `scripts/deploy.ts` | `readWorkerName`（Worker の名前の検査）を共用する |
 
 ## 作る Access アプリ（`--create-access-app`）

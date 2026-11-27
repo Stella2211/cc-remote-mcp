@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import nodePath from "node:path";
+import { parseDeviceKeys } from "../src/device-auth";
 import { readWorkerName, WORKER_NAME_VAR } from "./deploy";
 
 // フォークしたリポジトリのデプロイに要る値を集めて登録する（デプロイする PC で実行。Claude Code が動かしてよい）。
@@ -111,6 +112,22 @@ export function buildGithubPlan(v: {
     secret("CLOUDFLARE_API_TOKEN", v.apiToken),
     secret("CLOUDFLARE_ACCOUNT_ID", v.accountId),
   ];
+}
+
+// devices.local.json を Worker の parseDeviceKeys と同じ規則で調べる。通らない中身を入れると全端末が切れるので、入れる前に止める。
+// 中身（端末名・ハッシュ）はエラーに出さない
+export function validateDeviceKeys(raw: string): void {
+  let json: unknown;
+  try {
+    json = JSON.parse(raw);
+  } catch {
+    fail("devices.local.json が JSON として読めない（DEVICE_KEYS は入れない）");
+  }
+  if (!json || typeof json !== "object" || Array.isArray(json)) fail("devices.local.json がオブジェクトではない（DEVICE_KEYS は入れない）");
+  const total = Object.keys(json).length;
+  if (total === 0) fail("devices.local.json に端末が1つもない。入れると全端末が切れる（DEVICE_KEYS は入れない）");
+  const accepted = parseDeviceKeys(raw).size;
+  if (accepted !== total) fail(`devices.local.json に Worker が受け付けない項目が ${total - accepted} 件ある（端末名か SHA-256 の形が違う。DEVICE_KEYS は入れない）`);
 }
 
 export function buildWorkerSecretPlan(v: { email?: string; deviceKeys?: string; discordWebhook?: string }): Step[] {
@@ -335,6 +352,7 @@ export async function github(opts: Options, env: Record<string, string | undefin
 export function workerSecrets(opts: Options, root: string, env: Record<string, string | undefined>, io: Io): void {
   const keysFile = nodePath.join(root, "devices.local.json");
   const deviceKeys = fs.existsSync(keysFile) ? fs.readFileSync(keysFile, "utf8").trim() : undefined;
+  if (deviceKeys !== undefined) validateDeviceKeys(deviceKeys);
   const plan = buildWorkerSecretPlan({ email: opts.email, deviceKeys, discordWebhook: env.DISCORD_WEBHOOK_URL?.trim() || undefined });
   if (!plan.length) fail("入れるものがない（--email、devices.local.json、環境変数 DISCORD_WEBHOOK_URL のどれもない）");
   if (!deviceKeys) io.log("devices.local.json がないので DEVICE_KEYS は入れない（bun run device add のあとでもう一度）");

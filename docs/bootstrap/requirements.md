@@ -13,7 +13,7 @@
 
 ## worker-secrets
 
-- `ALLOWED_EMAIL` は `--email`、`DEVICE_KEYS` はリポジトリ直下の `devices.local.json`、`DISCORD_WEBHOOK_URL` は同名の環境変数。あるものだけ入れ、どれも無ければ止める。
+- `ALLOWED_EMAIL` は `--email`、`DEVICE_KEYS` はリポジトリ直下の `devices.local.json`、`DISCORD_WEBHOOK_URL` は同名の環境変数。あるものだけ入れ、どれも無ければ止める。`devices.local.json` は入れる前に Worker の `parseDeviceKeys` と同じ規則で調べ、JSON として読めない・オブジェクトでない・端末が0件・Worker が捨てる項目がある、のどれかなら止める（全端末が切れるのを防ぐ。中身は表示しない）。
 - 入れる先の Worker は `--worker-name`、環境変数 `CC_REMOTE_MCP_WORKER_NAME`、`wrangler.jsonc` の `name` の順。`wrangler secret put` には必ず `--name` を付ける。
 
 ## 共通
