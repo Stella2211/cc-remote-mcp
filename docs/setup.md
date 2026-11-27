@@ -91,6 +91,8 @@ bunx wrangler secret put ALLOWED_EMAIL          # Access で許可したメー�
 bunx wrangler secret put DISCORD_WEBHOOK_URL    # 任意（Discord 通知）
 ```
 
+`CC_REMOTE_MCP_WORKER_NAME` を設定したときは、`wrangler secret put` に `--name <Worker の名前>` を付ける（例：`bunx wrangler secret put ALLOWED_EMAIL --name <Worker の名前>`）。付けないと、`wrangler.jsonc` の `cc-remote-mcp` という Worker にシークレットが入り、デプロイした Worker には届かない。以降の `secret put` も同じ。
+
 カスタムドメイン（`<MCP のホスト>` と `<link のホスト>`）の DNS と証明書はデプロイ時に作られる。数分たってから確認する。
 
 ```sh
@@ -165,7 +167,7 @@ Worker は main に push（マージ）すると GitHub Actions（`.github/workf
 | `CLOUDFLARE_API_TOKEN` | デプロイ先アカウントの API トークン。テンプレート「Edit Cloudflare Workers」で、対象をそのアカウントと、Worker のカスタムドメインを置くゾーンに絞る。カスタムドメインの付け替えで権限が足りないと言われたら、Zone の「DNS: Edit」を足す |
 | `CLOUDFLARE_ACCOUNT_ID` | デプロイ先の Cloudflare アカウント ID |
 
-`ALLOWED_EMAIL`・`DISCORD_WEBHOOK_URL`・`DEVICE_KEYS` は Worker のシークレットなので、これまでどおり `wrangler secret put` で入れる（デプロイし直しても消えない）。
+`ALLOWED_EMAIL`・`DISCORD_WEBHOOK_URL`・`DEVICE_KEYS` は Worker のシークレットなので、これまでどおり `wrangler secret put` で入れる（デプロイし直しても消えない）。`CC_REMOTE_MCP_WORKER_NAME` を設定しているときは `--name <Worker の名前>` を付ける。
 
 各 PC のクライアントは手で更新する。
 
