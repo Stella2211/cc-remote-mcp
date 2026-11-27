@@ -14,6 +14,7 @@ cc-remote-mcp は、利用者の PC で `claude remote-control`（`claude rc`）
 利用者からフォークのセットアップを頼まれたときの分担。詳しくは `docs/setup.md` の「Claude Code にまかせる（bootstrap）」、スクリプトは `scripts/bootstrap.ts`。ホスト名・AUD・アカウント ID・メールアドレスはコミットしない（シークレットと端末トークンはチャットにも書かない）。
 
 - 人がやること：フォークの Actions を有効にする、`gh auth login`、Zero Trust の初回の有効化、API トークンの作成（権限は `docs/setup.md` の表）と `CLOUDFLARE_API_TOKEN` への設定、ホスト名2つと許可するメールアドレスを決める、任意で Discord の Webhook、最後に claude.ai へのコネクタの追加と各 PC での `claude rc` の初回の承認。
+- トークンの渡し方：人が環境変数で渡す。手元なら Claude Code を起動するシェルで `export CLOUDFLARE_API_TOKEN=...` するか、`.gitignore` 済みの `.env.local` に書く（`bootstrap` が読む）。クラウドのセッションなら、環境（environment）の設定の環境変数に入れる。どちらも値をチャットに貼らせない・コミットしない。空なら `bootstrap` は止まるので、人に設定を頼む。
 - Claude Code がやること：
   1. `bun install --frozen-lockfile`、`bun run typecheck`、`bun test`
   2. `bun run bootstrap github --mcp-host <MCP のホスト> --link-host <link のホスト> --dry-run` で登録するものを確かめてから、`--dry-run` なしで実行する（Access アプリをダッシュボードで作っていなければ `--create-access-app --email <メールアドレス>` を足す）
