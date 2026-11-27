@@ -34,6 +34,8 @@ CC_REMOTE_MCP_ACCESS_AUD=<AUD タグ>
 
 ## 1. Cloudflare Access（MCP 側）
 
+API で作るなら [setup-automation/](./setup-automation/README.md)（`bun run setup`、GitHub Actions の `setup`）。以下はダッシュボードで手で作る場合。
+
 Zero Trust のダッシュボードで、self-hosted のアプリを新しく作る。
 
 | 項目 | 設定 |
@@ -134,7 +136,7 @@ Worker は main に push（マージ）すると GitHub Actions（`.github/workf
 
 | シークレット | 中身 |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | デプロイ先アカウントの API トークン。テンプレート「Edit Cloudflare Workers」で、対象をそのアカウントと、Worker のカスタムドメインを置くゾーンに絞る。カスタムドメインの付け替えで権限が足りないと言われたら、Zone の「DNS: Edit」を足す |
+| `CLOUDFLARE_API_TOKEN` | デプロイ先アカウントの API トークン。テンプレート「Edit Cloudflare Workers」で、対象をそのアカウントと、Worker のカスタムドメインを置くゾーンに絞る。カスタムドメインの付け替えで権限が足りないと言われたら、Zone の「DNS: Edit」を足す。`setup` ワークフローも使うなら Access の権限を足す（[setup-automation/](./setup-automation/README.md#api-トークンの権限)） |
 | `CLOUDFLARE_ACCOUNT_ID` | デプロイ先の Cloudflare アカウント ID |
 
 `ALLOWED_EMAIL`・`DISCORD_WEBHOOK_URL`・`DEVICE_KEYS` は Worker のシークレットなので、これまでどおり `wrangler secret put` で入れる（デプロイし直しても消えない）。`CC_REMOTE_MCP_WORKER_NAME` を設定しているときは `--name <Worker の名前>` を付ける。

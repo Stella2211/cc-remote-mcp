@@ -1,0 +1,33 @@
+name: setup
+# Cloudflare Access のアプリ（Managed OAuth）を API で用意し、AUD などの秘密ではない値をログに出す（docs/setup-automation）。手動実行だけ
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 読むだけにして、作る・変えるものを表示する
+        type: boolean
+        default: true
+      update_existing:
+        description: 既存の Access アプリの OAuth 設定とポリシーを合わせる（false なら既存のアプリは読むだけ）
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - run: bun install --frozen-lockfile
+      - name: setup
+        run: bun run setup ${{ inputs.dry_run && '--dry-run' || '' }} ${{ inputs.update_existing && '--update-existing' || '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CC_REMOTE_MCP_ALLOWED_EMAIL: ${{ secrets.CC_REMOTE_MCP_ALLOWED_EMAIL }}
+          CC_REMOTE_MCP_MCP_HOST: ${{ vars.CC_REMOTE_MCP_MCP_HOST }}
+          CC_REMOTE_MCP_LINK_HOST: ${{ vars.CC_REMOTE_MCP_LINK_HOST }}
