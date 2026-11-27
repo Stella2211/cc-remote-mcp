@@ -46,7 +46,7 @@ Before deploying, check whom you will be trusting and what becomes possible on y
 
 ## Setup
 
-For the steps, see [docs/setup.md](./docs/setup.md). For the design and implementation, see [docs/README.md](./docs/README.md).
+For the steps, see [docs/setup.md](./docs/setup.md). If you fork the repository and hand it to Claude Code, it can register the values and get the deploy going with `bun run bootstrap`, leaving you only the steps that exist solely in a dashboard or third-party UI, such as creating the Cloudflare API token (see "Fork and deploy" in [CLAUDE.md](./CLAUDE.md)). For the design and implementation, see [docs/README.md](./docs/README.md).
 
 ## Development
 
@@ -58,6 +58,7 @@ bun run dev        # wrangler dev (with DEV_BYPASS_ACCESS=1, Access can be skipp
 bun run client     # run the client locally (reads client/.env. For another config file, use `--env <path>`)
 bun run cf-typegen # regenerate worker-configuration.d.ts after changing wrangler.jsonc
 bun run deploy     # deploy with the production values (CC_REMOTE_MCP_* in .env.local) filled in
+bun run bootstrap  # fork setup: look up the Cloudflare values and register the GitHub Actions variables / secrets and Worker secrets (--dry-run shows what it would set)
 ```
 
 For the secrets used by `bun run dev`, copy `.dev.vars.example` to `.dev.vars` and fill it in (`ALLOWED_EMAIL`, `DEVICE_KEYS`, `DEV_BYPASS_ACCESS`, `DISCORD_WEBHOOK_URL`. Do not commit `.dev.vars`).
