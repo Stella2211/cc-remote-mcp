@@ -5,7 +5,7 @@
 | `src/access.ts` | `checkAccess`（Access の JWT 検証と `ALLOWED_EMAIL` の照合）。不一致の拒否は Discord に通知（`email_rejected`） |
 | `src/device-auth.ts` | `parseDeviceKeys`（名前とハッシュの形を検査）、`sha256Hex`、`constantTimeEqual`、`authenticateDevice` |
 | `src/index.ts` | `handleLink`：アップグレードの確認 → `authenticateDevice` → ヘッダーを整えて DO へ |
-| `scripts/worker-secrets.ts` | `CC_REMOTE_MCP_ALLOWED_EMAIL` / `_DEVICE_KEYS` / `_DISCORD_WEBHOOK_URL` のうち空でないものを `wrangler secret put`（値は stdin）で書く。`planSecrets` が書く対象を決め、`DEVICE_KEYS` は JSON のオブジェクトか検査する。`CC_REMOTE_MCP_WORKER_NAME` があれば `--name` を付ける |
+| `scripts/worker-secrets.ts` | `CC_REMOTE_MCP_ALLOWED_EMAIL` / `_DEVICE_KEYS` / `_DISCORD_WEBHOOK_URL` のうち空でないものを `wrangler secret put`（値は stdin）で書く。`planSecrets` が書く対象を決め、`DEVICE_KEYS` は Worker の `parseDeviceKeys` と同じ規則で検査し、不正な項目か有効0件なら書かない。`CC_REMOTE_MCP_WORKER_NAME` があれば `--name` を付ける |
 | `.github/workflows/worker-secrets.yml` | 上を動かす手動実行だけのワークフロー（`main` のみ、`contents: read`、`production` の environment） |
 | `scripts/device.ts` | `init`（PC 側でトークンを作り `client/.env` に書く）、`add` / `remove` / `show`（`devices.local.json` の管理） |
 
@@ -27,4 +27,4 @@ vars の本番の値はリポジトリに置かない（`wrangler.jsonc` は例�
 - `test/device-auth.test.ts`：正しいトークン、違うトークン、未登録の端末、ヘッダー欠け、Basic、不正な端末名、`DEVICE_KEYS` 未設定。
 - `test/index.test.ts`：ホストとパスの振り分け、426 / 401、DO に渡るヘッダー、`/mcp` の 403 / 500、ホスト名の vars が空のときの 500、本番ホストで `DEV_BYPASS_ACCESS` が効かないこと。
 - `test/deploy.test.ts`：必須の `CC_REMOTE_MCP_*` が1つでも空ならデプロイしないこと、routes と vars の置き換え、任意の `CC_REMOTE_MCP_WORKER_NAME` による name の置き換えとその形の検査。
-- `test/worker-secrets.test.ts`：空でない secret だけを書くこと、全部空なら何も書かないこと、`DEVICE_KEYS` が JSON のオブジェクトでなければ（値を出さずに）止めること。
+- `test/worker-secrets.test.ts`：空でない secret だけを書くこと、全部空なら何も書かないこと、`DEVICE_KEYS` が JSON のオブジェクトでない、`{}`、不正な端末名・ハッシュを含む、のいずれかなら（値を出さずに）止めること。

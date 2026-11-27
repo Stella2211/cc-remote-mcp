@@ -150,7 +150,7 @@ gh run watch   # 結果の確認
 
 - 空の secret は書かない。Worker に入っている値は消えず、そのまま残る。
 - 書くものが無いとき、または Cloudflare の2つの secret が空のときは、何も書かずに「成功」で終わる（理由はログに出る）。
-- 値はログにも引数にも出さない（GitHub の secret はログでマスクされる）。`CC_REMOTE_MCP_DEVICE_KEYS` が JSON のオブジェクトでなければ書かずに失敗する。
+- 値はログにも引数にも出さない（GitHub の secret はログでマスクされる）。`CC_REMOTE_MCP_DEVICE_KEYS` は Worker と同じ規則で検査し、不正な項目があるか有効な端末が0件なら書かずに失敗する（全端末が使えなくなるのを防ぐ）。
 - `main` のブランチでだけ動く。`deploy` と同じ `production` の environment・concurrency を使う。
 - `DEVICE_KEYS` は全体を置き換える。`bun run device add` / `remove` で更新した `devices.local.json` を、もう一度 `gh secret set` してから実行する。
 - 手元で動かすなら、同じ環境変数を入れて `bun run worker-secrets`。

@@ -1,3 +1,4 @@
+import { parseDeviceKeys } from "../src/device-auth";
 import { readWorkerName } from "./deploy";
 
 // GitHub Actions の secrets から、Worker のシークレット（ALLOWED_EMAIL / DEVICE_KEYS / DISCORD_WEBHOOK_URL）を wrangler で書く。
@@ -21,19 +22,26 @@ export function planSecrets(env: Record<string, string | undefined>): SecretToWr
   for (const [from, name] of Object.entries(WORKER_SECRETS)) {
     const value = env[from]?.trim();
     if (!value) continue;
-    if (name === "DEVICE_KEYS" && !isJsonObject(value)) throw new Error(`${from} が JSON のオブジェクトではない（値は表示しない）`);
+    if (name === "DEVICE_KEYS") checkDeviceKeys(from, value);
     plan.push({ name, value });
   }
   return plan;
 }
 
-function isJsonObject(text: string): boolean {
+// Worker の parseDeviceKeys と同じ規則で検査する。1件でも不正、または有効な端末が0件なら書かない
+// （書くと Worker が一部または全部の端末を黙って受け付けなくなる）。値は表示しない
+function checkDeviceKeys(from: string, value: string): void {
+  let parsed: unknown;
   try {
-    const parsed: unknown = JSON.parse(text);
-    return typeof parsed === "object" && parsed !== null && !Array.isArray(parsed);
+    parsed = JSON.parse(value);
   } catch {
-    return false;
+    throw new Error(`${from} が JSON ではない（値は表示しない）`);
   }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) throw new Error(`${from} が JSON のオブジェクトではない（値は表示しない）`);
+  const total = Object.keys(parsed).length;
+  const valid = parseDeviceKeys(value).size;
+  if (valid === 0) throw new Error(`${from} に有効な端末が1つも無い（書くと全端末が使えなくなる。値は表示しない）`);
+  if (valid !== total) throw new Error(`${from} に不正な端末名かハッシュがある（${total - valid} 件。値は表示しない）`);
 }
 
 if (import.meta.main) {
