@@ -49,6 +49,11 @@ CC_REMOTE_MCP_ACCESS_AUD=<AUD タグ>
 | Account の「Access: Apps and Policies: Read」 | `bootstrap github`：Access アプリを探し、AUD を読む |
 | Account の「Access: Apps and Policies: Edit」（Read の代わり） | `--create-access-app` で Access アプリとポリシーを作るときだけ |
 
+トークンを Claude Code に渡す方法（値はチャットに貼らない。コミットもしない）：
+
+- 手元の Claude Code：Claude Code を起動するシェルで `export CLOUDFLARE_API_TOKEN=...` してから起動する。または、リポジトリの直下の `.env.local`（`.gitignore` 済み。Bun が自動で読み、`bootstrap` もここから読む）に `CLOUDFLARE_API_TOKEN=...` と書く。
+- Claude Code on the web（クラウドのセッション）：claude.ai/code の環境（environment）の設定で、環境変数に `CLOUDFLARE_API_TOKEN=...`（`.env` 形式、1行1つ）を入れ、その環境でセッションを始める。セッションが読む環境変数になるので、変更は起動済みのセッションにはすぐには効かない（新しいセッションで確かめる）。Claude Code のドキュメントによると、環境変数はその環境を使う人なら誰でも読めるので、共有の環境には入れず、権限を絞ったトークンにする。
+
 `bootstrap github` は、使ったトークンをそのまま GitHub の secret `CLOUDFLARE_API_TOKEN` に入れる。
 
 ```sh
