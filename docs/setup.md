@@ -45,6 +45,7 @@ CC_REMOTE_MCP_ACCESS_AUD=<AUD タグ>
 | --- | --- |
 | テンプレート「Edit Cloudflare Workers」（対象はデプロイ先のアカウントと、カスタムドメインを置くゾーン） | デプロイ（CI と `bun run deploy`）と `wrangler secret put`。カスタムドメインで権限が足りないと言われたら Zone の「DNS: Edit」を足す |
 | Account の「Access: Organizations, Identity Providers, and Groups: Read」 | `bootstrap github`：チームのドメイン（`auth_domain`）を読む |
+| Account の「Account Settings: Read」 | `bootstrap`：`--account-id` を渡さないときだけ、トークンで見えるアカウントを調べる（`GET /accounts`）。ID を渡すなら要らない |
 | Account の「Access: Apps and Policies: Read」 | `bootstrap github`：Access アプリを探し、AUD を読む |
 | Account の「Access: Apps and Policies: Edit」（Read の代わり） | `--create-access-app` で Access アプリとポリシーを作るときだけ |
 
