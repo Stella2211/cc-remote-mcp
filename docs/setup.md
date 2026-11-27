@@ -76,7 +76,7 @@ curl -s -o /dev/null -w '%{http_code}\n' https://<link のホスト>/connect  # 
 
 1. Claude Code に claude.ai のアカウントでログインしておく（API キーでは Remote Control は使えない）。
 2. リポジトリを置き、`bun install`。
-3. `bun run device init <端末名>`（例：`mac-mini`）。`client/.env` に端末名とトークンが入り、登録用のハッシュが表示される。
+3. `bun run device init <端末名>`（例：`mac-mini`）。`client/.env` に端末名とトークンが入り、登録用のハッシュが表示される。すでにトークンがある `client/.env` は上書きせず断る（作り直すときは `--force`。古いトークンは使えなくなるので、`device add` で登録し直す）。
 4. `client/.env` の `CC_REMOTE_MCP_URL`（`wss://<link のホスト>/connect`）、`ALLOWED_ROOTS`（必須）と `BLOCKED_DIRS` を書く。項目の説明は `client/.env.example`。設定ファイルを別の場所に置くときは、`bun run client --env <パス>` で指定する（省くと `client/.env`）。
 5. **遠隔で使うディレクトリで、一度だけ手で `claude rc` を実行して承認する。** 初回の「Enable Remote Control?」と、ディレクトリの「Trust <dir>?」に y で答える。クライアントは端末なしで起動するので、未承認のディレクトリでは rc がすぐ終了する（ツールの結果に対処が出る）。
 6. Windows は `CLAUDE_BIN` に `claude.exe` のフルパスを書く（`.cmd` は使えない）。
