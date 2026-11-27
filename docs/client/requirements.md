@@ -22,7 +22,7 @@
 - `claude remote-control --name <名前> --spawn <same-dir|worktree> [--permission-mode <モード>]` を、対象ディレクトリを cwd にして起動する。stdin は閉じる。
 - 子プロセスにはクライアント自身の設定を渡さない。除く環境変数は `DEVICE_TOKEN`・`DEVICE_NAME`・`CF_ACCESS_CLIENT_ID`・`CF_ACCESS_CLIENT_SECRET`・`ALLOWED_ROOTS`・`BLOCKED_DIRS`・`TMUX_BIN` と、`CC_REMOTE_MCP_` で始まるもの（`client/sessions.ts` の `STRIP_ENV`）。それ以外は引き継ぐ。
 - 同時に `MAX_SESSIONS` 個まで（対話セッションと合計）。同じディレクトリで2つ目の rc は起動しない。要求は並行に処理されるが、同時に来た起動でもこの2つの制限は回避できない（検査から登録までを、対話セッションの起動とも1つずつ行う）。
-- `CLAUDE_BIN` が無い・実行できないときは、起動の検査中（StartLock の内側）に起動できなかったこと（pid が無いこと）を検知し、セッションを残さず、上限にも数えずに `spawn_failed`（「claude コマンドを起動できなかった」）にする。
+- `CLAUDE_BIN` が無い・実行できないときは、StartLock の内側（検査から登録までの間）で起動できなかったこと（pid が無いこと）を検知し、セッションを残さず、上限にも数えずに `spawn_failed`（「claude コマンドを起動できなかった」）にする。
 - 起動後、セッション URL が出るか、終了するか、8秒たつまで待って状態を返す。
 - 出力は ANSI と制御文字を除き、末尾20行（1行300文字）だけ持つ。終了したものは30分（最大20件）残す。
 - クライアントが SIGINT / SIGTERM を受けたら、起動した rc をすべて止めてから終わる。対話セッションは、tmux の中のものは止めず、Windows の疑似端末のものは Ctrl+C を2回送って2秒後に強制終了する。
