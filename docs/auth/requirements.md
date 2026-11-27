@@ -7,3 +7,4 @@
 - ハッシュの比較は長さ一定の時間で行い、未登録の端末名でもハッシュ計算はする。
 - DO には認証済みの端末名だけを渡し、`Authorization` と `CF-Access-Client-Secret` は落とす。クライアントが送った `X-CC-Remote-MCP-Authenticated-Device` は上書きする。
 - `DEVICE_KEYS` が未設定・壊れているときは、どの端末も通さない。
+- GitHub Actions の secrets から Worker のシークレットを書けること。空のものは書かず（消さず）、値はログに出さず、書くものが無い・Cloudflare の secret が無いときは何もせずに終わる。デプロイのワークフローは変えない。

@@ -9,7 +9,7 @@ cc-remote-mcp は、Claude から利用者の PC で `claude rc` や対話セッ
 
 | フォルダ | 内容 |
 | --- | --- |
-| [auth/](./auth/README.md) | MCP 側の Cloudflare Access（Managed OAuth）と、端末側のトークン認証（DEVICE_KEYS）。 |
+| [auth/](./auth/README.md) | MCP 側の Cloudflare Access（Managed OAuth）と、端末側のトークン認証（DEVICE_KEYS）。Worker のシークレットを GitHub Actions から入れる `worker-secrets` も含む。 |
 | [link/](./link/README.md) | 端末と Worker のあいだの WebSocket（Durable Object、Hibernation、プロトコル、再接続）。 |
 | [mcp-tools/](./mcp-tools/README.md) | 7つの MCP ツールの入出力と、失敗時の返し方。 |
 | [client/](./client/README.md) | PC 側のクライアント：設定、パスの方針、rc プロセスの管理、自動起動。 |

@@ -63,6 +63,8 @@ bunx wrangler secret put DISCORD_WEBHOOK_URL    # 任意（Discord 通知）
 
 `CC_REMOTE_MCP_WORKER_NAME` を設定したときは、`wrangler secret put` に `--name <Worker の名前>` を付ける（例：`bunx wrangler secret put ALLOWED_EMAIL --name <Worker の名前>`）。付けないと、`wrangler.jsonc` の `cc-remote-mcp` という Worker にシークレットが入り、デプロイした Worker には届かない。以降の `secret put` も同じ。
 
+`wrangler secret put` の代わりに、GitHub Actions から入れることもできる（[GitHub Actions からシークレットを入れる](#github-actions-からシークレットを入れる)）。
+
 カスタムドメイン（`<MCP のホスト>` と `<link のホスト>`）の DNS と証明書はデプロイ時に作られる。数分たってから確認する。
 
 ```sh
@@ -94,7 +96,7 @@ bun run device add <端末名> <ハッシュ>
 bunx wrangler secret put DEVICE_KEYS < devices.local.json
 ```
 
-失効は `bun run device remove <端末名>` のあと同じく `secret put`。接続中の端末は次の操作で切断される。
+失効は `bun run device remove <端末名>` のあと同じく `secret put`（GitHub Actions から入れるなら `gh secret set` のあとワークフローを実行）。接続中の端末は次の操作で切断される。
 
 ## 5. 動作確認と自動起動
 
@@ -125,6 +127,33 @@ claude.ai のカスタムコネクタに `https://<MCP のホスト>/mcp` を追
 ## 任意：link. ホストも Access で守る
 
 Access に `<link のホスト>` のアプリを作り、Service Auth のポリシーとサービストークンを用意し、各 PC の `client/.env` の `CF_ACCESS_CLIENT_ID` / `CF_ACCESS_CLIENT_SECRET` に入れる。端末トークンの検証はそのまま残る（二重の守り）。クライアントは `CF_ACCESS_CLIENT_ID` と `CF_ACCESS_CLIENT_SECRET` の両方がそろったときだけ、接続のヘッダー `CF-Access-Client-Id` / `CF-Access-Client-Secret` に付ける（片方だけだと起動時にエラー）。名前は `client/.env` の変数名で、Worker のシークレットではない。
+
+## GitHub Actions からシークレットを入れる
+
+`wrangler secret put` を手元で動かせないとき（フォークを Claude Code に任せるときなど）は、Worker のシークレットを GitHub の secrets に入れ、ワークフロー `worker-secrets`（`.github/workflows/worker-secrets.yml`、手動実行だけ）で Worker に書く。`wrangler secret put` による手元の入れ方も、これまでどおり使える。
+
+| GitHub の secret | 書き込み先（Worker のシークレット） |
+| --- | --- |
+| `CC_REMOTE_MCP_ALLOWED_EMAIL` | `ALLOWED_EMAIL` |
+| `CC_REMOTE_MCP_DEVICE_KEYS` | `DEVICE_KEYS` |
+| `CC_REMOTE_MCP_DISCORD_WEBHOOK_URL` | `DISCORD_WEBHOOK_URL`（任意） |
+
+`CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID`（[更新するとき](#更新するとき)）が要る。書き込み先の Worker は `CC_REMOTE_MCP_WORKER_NAME`（variable）があればその名前、無ければ `wrangler.jsonc` の `name`。
+
+```sh
+gh secret set CC_REMOTE_MCP_ALLOWED_EMAIL --body "you@example.com"
+gh secret set CC_REMOTE_MCP_DEVICE_KEYS < devices.local.json
+gh secret set CC_REMOTE_MCP_DISCORD_WEBHOOK_URL --body "<Discord の Webhook の URL>"   # 任意
+gh workflow run worker-secrets.yml
+gh run watch   # 結果の確認
+```
+
+- 空の secret は書かない。Worker に入っている値は消えず、そのまま残る。
+- 書くものが無いとき、または Cloudflare の2つの secret が空のときは、何も書かずに「成功」で終わる（理由はログに出る）。
+- 値はログにも引数にも出さない（GitHub の secret はログでマスクされる）。`CC_REMOTE_MCP_DEVICE_KEYS` が JSON のオブジェクトでなければ書かずに失敗する。
+- `main` のブランチでだけ動く。`deploy` と同じ `production` の environment・concurrency を使う。
+- `DEVICE_KEYS` は全体を置き換える。`bun run device add` / `remove` で更新した `devices.local.json` を、もう一度 `gh secret set` してから実行する。
+- 手元で動かすなら、同じ環境変数を入れて `bun run worker-secrets`。
 
 ## 更新するとき
 

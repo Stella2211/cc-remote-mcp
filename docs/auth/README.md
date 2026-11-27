@@ -11,3 +11,4 @@
 - トークンは発行した PC の `client/.env` にだけ置く。`device init` はトークンを画面に出さず、ハッシュだけを表示する。ハッシュは秘密ではない。
 - 失効は `DEVICE_KEYS` から外して `secret put`。DO は `listDevices` / `call` のたびに `DEVICE_KEYS` を読み直し、外れた端末の接続を閉じる（コード 4003）。
 - 同じ端末名で2つ目の接続が来たら古い方を閉じる（コード 4000）。クライアントは 4000 で閉じられたら5分待ってからつなぎ直す（取り合いを避ける）。
+- Worker のシークレット（`ALLOWED_EMAIL` / `DEVICE_KEYS` / `DISCORD_WEBHOOK_URL`）は、手元の `wrangler secret put` のほか、手動実行のワークフロー `worker-secrets` でも入れられる（[setup.md](../setup.md)）。空の secret は書かず、消さない。
