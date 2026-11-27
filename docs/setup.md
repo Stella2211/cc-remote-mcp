@@ -130,7 +130,7 @@ Access に `<link のホスト>` のアプリを作り、Service Auth のポリ�
 
 Worker とクライアントはどちらを先に更新してもよい。Worker だけ新しいあいだは、新しいツールが「引数が端末側の検査を通らなかった」で失敗する。
 
-Worker は main に push（マージ）すると GitHub Actions（`.github/workflows/ci.yml` の `deploy`）がテストのあとにデプロイし、疎通も確認する。手で再実行するときは Actions の「ci」から Run workflow。リポジトリの Settings → Secrets and variables → Actions の Variables に4つの `CC_REMOTE_MCP_*`（[フォークして使うときに設定するもの](#フォークして使うときに設定するもの)）を、Secrets に次の2つを入れておく。`CC_REMOTE_MCP_*` が1つでも空ならデプロイの手順で止まる。
+Worker は main に push（マージ）すると GitHub Actions（`.github/workflows/ci.yml` の `deploy`）がテストのあとにデプロイし、疎通も確認する。手で再実行するときは Actions の「ci」から Run workflow。リポジトリの Settings → Secrets and variables → Actions の Variables に4つの `CC_REMOTE_MCP_*`（[フォークして使うときに設定するもの](#フォークして使うときに設定するもの)）を、Secrets に次の2つを入れておく。4つの Variables が1つでも空だと `deploy` ジョブは飛ばされ（赤くならない）、2つの Secrets が空だとジョブの中で以降の手順が飛ばされる。フォークした直後はこの状態になる。そろっていれば、これまでどおりデプロイする。手元の `bun run deploy` は、必須の値が空ならエラーで止まる。
 
 | シークレット | 中身 |
 | --- | --- |

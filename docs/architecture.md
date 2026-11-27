@@ -32,7 +32,7 @@
 | `shared/protocol.ts` | WebSocket のメッセージと操作のスキーマ（Worker とクライアントで共有） |
 | `client/` | PC 側のクライアント |
 | `scripts/device.ts` | 端末トークンの発行と `devices.local.json` の管理 |
-| `scripts/deploy.ts` | 環境変数 `CC_REMOTE_MCP_*` の値で routes と vars（任意の `CC_REMOTE_MCP_WORKER_NAME` があれば name も）を置き換えた設定を一時的に書き、`wrangler deploy` を動かす（必須の値が空ならデプロイしない） |
+| `scripts/deploy.ts` | 環境変数 `CC_REMOTE_MCP_*` の値で routes と vars（任意の `CC_REMOTE_MCP_WORKER_NAME` があれば name も）を置き換えた設定を一時的に書き、`wrangler deploy` を動かす（必須の値が空ならデプロイしない。CI の `deploy` は、必須の variables や Cloudflare の secrets が空なら飛ばす） |
 | `autostart/` | macOS（launchd）・Linux（systemd --user）・Windows（タスク スケジューラ）の登録スクリプト |
 
 ## 無料枠
