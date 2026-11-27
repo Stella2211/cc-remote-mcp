@@ -44,6 +44,10 @@ Before deploying, check whom you will be trusting and what becomes possible on y
 - **The receiver of the Discord webhook** (if you set one) gets the start and stop of rc and interactive sessions (time, device name, location; for starts, also the status) and the email addresses that were rejected. The contents of prompts and input are not sent.
 - This project is not an official Anthropic tool and is not affiliated with Anthropic.
 
+## Security
+
+To report a vulnerability, see [SECURITY.md](./SECURITY.md).
+
 ## Setup
 
 For the steps, see [docs/setup.md](./docs/setup.md). If you fork the repository and hand it to Claude Code, it can register the values and get the deploy going with `bun run bootstrap`, leaving you only the steps that exist solely in a dashboard or third-party UI, such as creating the Cloudflare API token (see "Fork and deploy" in [CLAUDE.md](./CLAUDE.md)). For the design and implementation, see [docs/README.md](./docs/README.md).
