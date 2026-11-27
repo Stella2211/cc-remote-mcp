@@ -2,16 +2,16 @@
 
 | ファイル | 内容 |
 | --- | --- |
-| `client/main.ts` | 起動、`claude` と `tmux` の場所の解決（Windows の `.cmd` / `.bat` は拒否）、対話セッションの入れ物の選択（tmux か疑似端末）、シグナルでの片付け |
+| `client/main.ts` | 起動、`claude` と `tmux` の場所の解決（Windows の `.cmd` / `.bat` は拒否）、対話セッションのバックエンドの選択（tmux か疑似端末）、シグナルでの片付け |
 | `client/config.ts` | `.env` の読み取り（`parseEnv`）、`buildConfig`、`realFs` |
 | `client/paths.ts` | `validateShape`、`resolveDir`、`checkReal`、`listRoots`、`listSubdirs`、`fitName`、`isHome`、`ALWAYS_BLOCKED` |
 | `client/actions.ts` | `handleRequest`：リクエストの検証と7操作への振り分け |
 | `client/interactive.ts` | `InteractiveManager`（[interactive/](../interactive/implementations.md)） |
-| `client/sessions.ts` | `SessionManager`（起動・停止・一覧）、`StartLock`（rc と対話セッションの起動の検査と登録を1つずつ通す錠。`main.ts` で1つ作って両方に渡す）、`defaultKill`、`childEnv`、`cleanLine`、`findSessionUrl` |
+| `client/sessions.ts` | `SessionManager`（起動・停止・一覧）、`StartLock`（rc と対話セッションの起動の検査と登録を1つずつ通すロック。`main.ts` で1つ作って両方に渡す）、`defaultKill`、`childEnv`、`cleanLine`、`findSessionUrl` |
 | `client/connection.ts` | `Link`（[link/](../link/README.md)） |
 | `autostart/macos/` | LaunchAgent `io.github.stella2211.cc-remote-mcp`（RunAtLoad、KeepAlive。bootout が終わるまで bootstrap をやり直す） |
 | `autostart/linux/` | `systemd --user` の `cc-remote-mcp.service`（Restart=always、KillMode=mixed） |
-| `autostart/windows/` | タスク「cc-remote-mcp」（ログオン時）と、再起動とログ（`Start-Process` でファイルへ直接、起動ごとに1世代回す）を受け持つ `run-client.ps1`、bun を子ごと（`taskkill /T /F`）止めてラッパーに起動し直させる `restart.ps1`（更新のあとに使う）。どの `.ps1` も BOM 付き UTF-8（Windows PowerShell 5.1 は BOM なしだと ANSI で読み、日本語の文字列で構文エラーになる。`test/autostart.test.ts` で確かめる） |
+| `autostart/windows/` | タスク「cc-remote-mcp」（ログオン時）と、再起動とログ（`Start-Process` でファイルへ直接、起動ごとに1世代回す）を受け持つ `run-client.ps1`、bun を子ごと（`taskkill /T /F`）止めてラッパーに起動し直させる `restart.ps1`（更新のあとに使う）。どの `.ps1` も BOM 付き UTF-8（Windows PowerShell 5.1 は BOM なしだと ANSI で読み、日本語の文字列で構文エラーになる。`test/autostart.test.ts` で確認する） |
 
 ## テスト
 

@@ -58,10 +58,10 @@ bun install --frozen-lockfile
 bun run typecheck && bun test
 bun run deploy                                  # .env.local の CC_REMOTE_MCP_* を差し込む。初回は DeviceHub の migration v1 も一緒に適用される
 bunx wrangler secret put ALLOWED_EMAIL          # Access で許可したメールアドレス
-bunx wrangler secret put DISCORD_WEBHOOK_URL    # 任意。rc・対話セッションの起動・停止と、許可外メールアドレスの拒否を通知する
+bunx wrangler secret put DISCORD_WEBHOOK_URL    # 任意（Discord 通知）
 ```
 
-カスタムドメイン（`<MCP のホスト>` と `<link のホスト>`）の DNS と証明書はデプロイ時に作られる。数分たってから確かめる。
+カスタムドメイン（`<MCP のホスト>` と `<link のホスト>`）の DNS と証明書はデプロイ時に作られる。数分たってから確認する。
 
 ```sh
 curl -s -o /dev/null -w '%{http_code}\n' https://<MCP のホスト>/mcp       # Access が前にいれば 401 か 302
@@ -78,7 +78,7 @@ curl -s -o /dev/null -w '%{http_code}\n' https://<link のホスト>/connect  # 
 2. リポジトリを置き、`bun install`。
 3. `bun run device init <端末名>`（例：`mac-mini`）。`client/.env` に端末名とトークンが入り、登録用のハッシュが表示される。すでにトークンがある `client/.env` は上書きせず断る（作り直すときは `--force`。古いトークンは使えなくなるので、`device add` で登録し直す）。
 4. `client/.env` の `CC_REMOTE_MCP_URL`（`wss://<link のホスト>/connect`）、`ALLOWED_ROOTS`（必須）と `BLOCKED_DIRS` を書く。項目の説明は `client/.env.example`。設定ファイルを別の場所に置くときは、`bun run client --env <パス>` で指定する（省くと `client/.env`）。
-5. **遠隔で使うディレクトリで、一度だけ手で `claude rc` を実行して承認する。** 初回の「Enable Remote Control?」と、ディレクトリの「Trust <dir>?」に y で答える。クライアントは端末なしで起動するので、未承認のディレクトリでは rc がすぐ終了する（ツールの結果に対処が出る）。
+5. **遠隔で使うディレクトリで、一度だけ手で `claude rc` を実行して承認する。** 初回の「Enable Remote Control?」と、ディレクトリの「Trust <dir>?」に y で答える。クライアントはターミナルなしで起動するので、未承認のディレクトリでは rc がすぐ終了する（ツールの結果に対処が出る）。
 6. Windows は `CLAUDE_BIN` に `claude.exe` のフルパスを書く（`.cmd` は使えない）。
 7. 対話セッション（`start_session` / `send_input`）を使う macOS / Linux では tmux を入れる（macOS は `brew install tmux`）。launchd などで見つからないときは `client/.env` の `TMUX_BIN` にフルパスを書く。Windows は tmux の代わりに Bun の疑似端末（ConPTY）を使うので、Bun を 1.3.14 以降にする（`bun --version`、古ければ `bun upgrade`）。
 8. 対話セッションを使うディレクトリは、一度 `claude` を手で起動して trust を承認し、`claude --rc` で Remote Control の初回確認も済ませておく。未承認だと確認画面で止まる。
@@ -96,13 +96,13 @@ bunx wrangler secret put DEVICE_KEYS < devices.local.json
 
 ## 5. 動作確認と自動起動
 
-まず手で動かし、ログに `{"link":"open"}` が出るのを確かめる。
+まず手で動かし、ログに `{"link":"open"}` が出るのを確認する。
 
 ```sh
 bun run client
 ```
 
-確かめたら Ctrl+C で止め、OS ごとに登録する。
+確認できたら Ctrl+C で止め、OS ごとに登録する。
 
 | OS | 登録 | 解除 | ログ |
 | --- | --- | --- | --- |
@@ -128,7 +128,7 @@ Access に `<link のホスト>` のアプリを作り、Service Auth のポリ�
 
 Worker とクライアントはどちらを先に更新してもよい。Worker だけ新しいあいだは、新しいツールが「引数が端末側の検査を通らなかった」で失敗する。
 
-Worker は main に push（マージ）すると GitHub Actions（`.github/workflows/ci.yml` の `deploy`）がテストのあとにデプロイし、疎通も確かめる。手で再実行するときは Actions の「ci」から Run workflow。リポジトリの Settings → Secrets and variables → Actions の Variables に4つの `CC_REMOTE_MCP_*`（[フォークして使うときに設定するもの](#フォークして使うときに設定するもの)）を、Secrets に次の2つを入れておく。`CC_REMOTE_MCP_*` が1つでも空ならデプロイの手順で止まる。
+Worker は main に push（マージ）すると GitHub Actions（`.github/workflows/ci.yml` の `deploy`）がテストのあとにデプロイし、疎通も確認する。手で再実行するときは Actions の「ci」から Run workflow。リポジトリの Settings → Secrets and variables → Actions の Variables に4つの `CC_REMOTE_MCP_*`（[フォークして使うときに設定するもの](#フォークして使うときに設定するもの)）を、Secrets に次の2つを入れておく。`CC_REMOTE_MCP_*` が1つでも空ならデプロイの手順で止まる。
 
 | シークレット | 中身 |
 | --- | --- |
@@ -153,6 +153,6 @@ bun install --frozen-lockfile
 powershell -NoProfile -ExecutionPolicy Bypass -File autostart\windows\restart.ps1   # bun を子ごと止め、タスクのラッパーが10秒後に起動し直す
 ```
 
-`Stop-ScheduledTask` だけでは子の bun が残るので使わない。ログ（`%LOCALAPPDATA%\cc-remote-mcp\client.log`）の起動の行で `bun` の版を確かめられる。この欄が無ければ、古いクライアントが動いたままになっている。
+`Stop-ScheduledTask` だけでは子の bun が残るので使わない。ログ（`%LOCALAPPDATA%\cc-remote-mcp\client.log`）の起動の行で `bun` の版を確認できる。この行が無ければ、古いクライアントが動いたままになっている。
 
-クライアントを再起動すると、そのクライアントが起動した rc（サーバーモード）は止まる（Windows の `restart.ps1` と `uninstall.ps1` は子ごと止めるので同じ）。対話セッションは macOS では tmux の中で動き続けるが、Linux の systemd（`KillMode=mixed`）ではサービスと一緒に止まり、Windows ではクライアントの疑似端末と一緒に終わる（[interactive/](./interactive/README.md)）。会話は端末で `claude --resume` から戻せる。
+クライアントを再起動すると、そのクライアントが起動した rc（サーバーモード）は止まる（Windows の `restart.ps1` と `uninstall.ps1` は子ごと止めるので同じ）。対話セッションは macOS では tmux の中で動き続けるが、Linux の systemd（`KillMode=mixed`）ではサービスと一緒に止まり、Windows ではクライアントの疑似端末と一緒に終わる（[interactive/](./interactive/README.md)）。会話はその PC のターミナルで `claude --resume` から再開できる。

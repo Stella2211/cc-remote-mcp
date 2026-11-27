@@ -17,4 +17,4 @@ devices(name PRIMARY KEY, platform, client_version, connected_at, disconnected_a
 ## テスト
 
 - `test/connection.test.ts`：`describeError`（理由とコードの取り出し、切り詰め、トークンらしい文字列の伏せ字）。
-- `test/hub.test.ts`：端末一覧、応答の受け渡し、エラーの素通し、別の接続からの応答の無視（タイムアウトになる）、オフライン・未登録・失効、トークンの入れ替え、`connId` での照合、置き換え、切断、壊れたメッセージ。
+- `test/hub.test.ts`：端末一覧、応答の受け渡し、エラーをそのまま返すこと、別の接続からの応答の無視（タイムアウトになる）、オフライン・未登録・失効、トークンの入れ替え、`connId` での照合、置き換え、切断、壊れたメッセージ。

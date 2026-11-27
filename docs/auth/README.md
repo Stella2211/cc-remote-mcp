@@ -2,7 +2,7 @@
 
 2つの入口を別々の方法で守る。要件は [requirements.md](./requirements.md)、実装は [implementations.md](./implementations.md)。
 
-- **MCP（`cc-remote-mcp.` の `/mcp`）**：Cloudflare Access の Managed OAuth。Worker は `Cf-Access-Jwt-Assertion` を検証し、`email` を `ALLOWED_EMAIL` と比べる（Access の検証に加えて、Worker 側でもメールアドレスを確かめる二重チェック）。
+- **MCP（`cc-remote-mcp.` の `/mcp`）**：Cloudflare Access の Managed OAuth。Worker は `Cf-Access-Jwt-Assertion` を検証し、`email` を `ALLOWED_EMAIL` と比べる（Access の検証に加えて、Worker 側でもメールアドレスを確認する二重チェック）。
 - **端末（`link.` の `/connect`）**：端末ごとのトークン。Worker は SHA-256 のハッシュだけを `DEVICE_KEYS` に持つ。
 
 ## 注意点

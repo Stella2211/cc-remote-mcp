@@ -12,7 +12,7 @@
 | `start_session` | `device`, `path`, `prompt`, `name?`, `permission_mode?`, `worktree?` | `start_interactive` |
 | `send_input` | `device`, `session_id`, `text?` か `key?`, `submit?` | `send_input` |
 
-`start_session` と `send_input` は対話セッションの操作。詳しくは [interactive/](../interactive/README.md)。MCP ツール名の `start_session` と、rc を起動する端末側の操作名 `start_session` は別物（後者は歴史的な名前のまま）。
+`start_session` と `send_input` は対話セッションの操作。詳しくは [interactive/](../interactive/README.md)。端末側の操作名 `start_session` は rc を起動する操作を指す歴史的な名前で、MCP ツールの `start_session`（対話セッションの起動）とは別物。
 
 ## 注意点
 
@@ -20,4 +20,4 @@
 - rc の出力の末尾は、終了したセッションのときだけ返す。対話セッションの画面の末尾は、起動直後と終了後だけ返す。
 - `start_rc_session` は起動直後（最大8秒）の様子を見て返す。すぐ終了したら `isError` にし、よくある原因（workspace trust 未承認、Remote Control の初回確認、ログイン）の対処を添える。
 - `permission_mode` に `bypassPermissions` と `dontAsk` は選べない。
-- 起動したセッションの URL は rc の出力から拾う。拾えなければ claude.ai/code の一覧で名前（既定は「端末名-ディレクトリ名」）を探す。
+- 起動したセッションの URL は rc の出力から取得する。取得できなければ claude.ai/code の一覧で名前（既定は「端末名-ディレクトリ名」）を探す。

@@ -15,4 +15,4 @@ cc-remote-mcp は、Claude から利用者の PC で `claude rc` や対話セッ
 | [client/](./client/README.md) | PC 側のクライアント：設定、パスの方針、rc プロセスの管理、自動起動。 |
 | [interactive/](./interactive/README.md) | 対話セッション（macOS / Linux は tmux、Windows は疑似端末）：プロンプトつきの起動、入力の送信、一覧と停止。 |
 
-各機能フォルダは `README.md`（概要・注意点）、`requirements.md`（要件）、`implementations.md`（実装と関連ファイル）で構成する。
+各機能フォルダは `README.md`（概要・注意点）、`requirements.md`（要件）、`implementations.md`（実装と関連ファイル）で構成される。

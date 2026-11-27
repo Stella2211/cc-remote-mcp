@@ -7,7 +7,7 @@
 | `<MCP のホスト>/mcp` | MCP（Streamable HTTP）。claude.ai のカスタムコネクタが呼ぶ | Cloudflare Access の Managed OAuth ＋ Worker での JWT 検証 |
 | `<link のホスト>/connect` | 各 PC のクライアントの WebSocket | Access の対象外。端末トークンを Worker が検証（任意で Access サービストークンも） |
 
-それ以外のホスト・パスはすべて 404。ホスト名は Worker の vars `MCP_HOST` / `LINK_HOST`（`wrangler.jsonc` は例の値で、本番の値は `scripts/deploy.ts` がデプロイ時に routes と一緒に差し込む）。どちらかが空なら、localhost の開発用を除いてすべて 500（fail closed）。
+それ以外のホスト・パスはすべて 404。ホスト名は Worker の vars `MCP_HOST` / `LINK_HOST`（`wrangler.jsonc` は例の値で、本番の値は `scripts/deploy.ts` がデプロイ時に routes と一緒に差し込む）。どちらかが空なら、localhost の開発用を除き、すべてのリクエストに 500 を返す（fail closed）。
 
 ## リクエストの流れ
 

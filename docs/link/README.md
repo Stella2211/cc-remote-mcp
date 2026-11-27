@@ -4,7 +4,7 @@
 
 ## 注意点
 
-- WebSocket Hibernation API を使う。何も起きていないあいだ DO はメモリから降りるので、接続ごとの情報は `serializeAttachment` と SQLite に置き、メモリには置かない。
+- WebSocket Hibernation API を使う。何も起きていないあいだ DO はメモリ上に残らないので、接続ごとの情報は `serializeAttachment` と SQLite に置き、メモリには置かない。
 - 待ち合わせ中のリクエスト（`pending`）だけはメモリに持つ。RPC の `call` が応答を待っているあいだは DO が降りないので、これで足りる。
 - ping / pong は `setWebSocketAutoResponse` が返すので、ハートビートでは DO が起きない。
 - PC 側はポートを開けない。NAT やファイアウォールの内側でも動く。
