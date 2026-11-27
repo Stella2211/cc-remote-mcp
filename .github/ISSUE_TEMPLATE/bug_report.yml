@@ -1,0 +1,58 @@
+name: バグ報告 / Bug report
+description: 動作がおかしいときはこちら / Report something that is not working
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        脆弱性は公開の issue に書かないでください（上の「セキュリティ上の問題の報告」から）。
+        For vulnerabilities, please do not use a public issue; use the security report link instead.
+  - type: dropdown
+    id: component
+    attributes:
+      label: コンポーネント / Component
+      options:
+        - Worker（MCP サーバー） / Worker (MCP server)
+        - クライアント（各 PC） / Client (per PC)
+        - セットアップ・ドキュメント / Setup / docs
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: クライアントを動かしている OS / OS the client runs on
+      placeholder: macOS / Linux / Windows
+  - type: input
+    id: version
+    attributes:
+      label: バージョンまたはコミット / Version or commit
+      placeholder: main の短いコミットハッシュ / short commit hash of main
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順 / Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した動作 / Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作 / Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: ログ / Logs
+      description: |
+        貼る前に、トークン・端末キー・ホスト名・メールアドレスを必ず消してください。
+        Redact tokens, device keys, hostnames and email addresses before pasting.
+      render: shell

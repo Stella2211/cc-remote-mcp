@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: セキュリティ上の問題の報告 / Report a security vulnerability
+    url: https://github.com/Stella2211/cc-remote-mcp/security/advisories/new
+    about: 脆弱性は公開の issue に書かず、こちらから非公開で報告してください。 / Please report vulnerabilities privately here, not in a public issue.
