@@ -153,6 +153,6 @@ bun install --frozen-lockfile
 powershell -NoProfile -ExecutionPolicy Bypass -File autostart\windows\restart.ps1   # bun を子ごと止め、タスクのラッパーが10秒後に起動し直す
 ```
 
-`Stop-ScheduledTask` だけでは子の bun が残るので使わない。ログ（`%LOCALAPPDATA%\cc-remote-mcp\client.log`）の起動の行で `bun` の版を確認できる。この行が無ければ、古いクライアントが動いたままになっている。
+`Stop-ScheduledTask` だけでは子の bun が残るので使わない。ログ（`%LOCALAPPDATA%\cc-remote-mcp\client.log`）の起動の行で `bun` の版を確認できる。この `bun` の欄が無ければ、古いクライアントが動いたままになっている。
 
 クライアントを再起動すると、そのクライアントが起動した rc（サーバーモード）は止まる（Windows の `restart.ps1` と `uninstall.ps1` は子ごと止めるので同じ）。対話セッションは macOS では tmux の中で動き続けるが、Linux の systemd（`KillMode=mixed`）ではサービスと一緒に止まり、Windows ではクライアントの疑似端末と一緒に終わる（[interactive/](./interactive/README.md)）。会話はその PC のターミナルで `claude --resume` から再開できる。
